@@ -3,11 +3,12 @@ from PIL import Image
 from dotenv import load_dotenv
 import io
 import os
-import json # To parse the JSON response
+import json  # To parse the JSON response
 
 # --- Install pillowHeif if you plan to use HEIC/HEIF images ---
 try:
     from pillow_heif import register_heif_opener
+
     register_heif_opener()
     print("Pillow-HEIF registered. HEIC/HEIF image support enabled.")
 except ImportError:
@@ -15,7 +16,6 @@ except ImportError:
     print("To enable HEIC/HEIF, run: pip install pillow-heif")
 except Exception as e:
     print(f"Error registering Pillow-HEIF: {e}")
-
 
 
 def sendImagePromptWithSchema(imageFile, textPrompt, responseSchema):
@@ -56,7 +56,7 @@ def sendImagePromptWithSchema(imageFile, textPrompt, responseSchema):
             config={
                 "response_mime_type": "application/json",
                 "response_schema": responseSchema,
-            }
+            },
         )
 
         # Try to parse the JSON response
@@ -68,18 +68,12 @@ def sendImagePromptWithSchema(imageFile, textPrompt, responseSchema):
         except json.JSONDecodeError:
             print("\nError: Model did not return valid JSON despite schema request.")
             print("Please check the model's response and your schema for consistency.")
-            return {
-                "error": "Invalid JSON response",
-                "response": response.text
-            }
+            return {"error": "Invalid JSON response", "response": response.text}
 
     except Exception as e:
         print(f"An error occurred: {e}")
-        return {
-            "error": str(e),
-            "response": None
-        }
-    
+        return {"error": str(e), "response": None}
+
 
 def getReceiptPromptInfo():
 
@@ -90,33 +84,30 @@ def getReceiptPromptInfo():
             "totalCost": {
                 "type": "number",
                 "format": "float",
-                "description": "Total cost of the fuel purchase"
+                "description": "Total cost of the fuel purchase",
             },
             "gallonsPurchased": {
                 "type": "number",
                 "format": "float",
-                "description": "Number of gallons purchased"
+                "description": "Number of gallons purchased",
             },
             "datetime": {
                 "type": "string",
-                "description": "Date and time of the purchase, formatted as MM/DD/YYYY HH:MM"
+                "description": "Date and time of the purchase, formatted as MM/DD/YYYY HH:MM",
             },
-            "storeBrand": {
-                "type": "string",
-                "description": "Brand of the gas station"
-            },
+            "storeBrand": {"type": "string", "description": "Brand of the gas station"},
             "storeAddress": {
                 "type": "string",
-                "description": "Address of the gas station"
-            }
+                "description": "Address of the gas station",
+            },
         },
         "required": [
             "totalCost",
             "gallonsPurchased",
             "datetime",
             "storeBrand",
-            "storeAddress"
-        ]
+            "storeAddress",
+        ],
     }
 
     receiptDataPrompt = "Obtain the total cost, gallons purchased, date and time (with time rounded to the whole minute), store brand, and store address from this receipt. If any value is unknown or unavailable, set it's corresponding value in the response to null."
@@ -132,18 +123,18 @@ def getOdometerPromptInfo(imageType):
         "properties": {
             "odometerReading": {
                 "type": "integer",
-                "description": "Odometer reading as an integer value"
+                "description": "Odometer reading as an integer value",
             }
         },
-        "required": [
-            "odometerReading"
-        ]
+        "required": ["odometerReading"],
     }
 
     if imageType == "receipt":
         odometerDataPrompt = "Obtain the number that is handwritten on this receipt."
     elif imageType == "odometer":
-        odometerDataPrompt = "Obtain the odometer reading from this photo of a vehicle's dashboard."
+        odometerDataPrompt = (
+            "Obtain the odometer reading from this photo of a vehicle's dashboard."
+        )
     else:
         raise ValueError("Invalid image type. Must be 'receipt' or 'odometer'.")
 
