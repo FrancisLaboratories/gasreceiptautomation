@@ -61,7 +61,7 @@ def sendImagePromptWithSchema(imageFile, textPrompt, responseSchema):
         img_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
 
         response = client.chat.completions.create(
-            model="gemini-2.5-flash-lite",
+            model=os.environ.get("LLM_MODEL", "gemini-2.5-flash-lite"),
             messages=[
                 {
                     "role": "user",
