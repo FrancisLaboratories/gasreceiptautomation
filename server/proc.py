@@ -1,9 +1,10 @@
-from google import genai
+from openai import OpenAI
 from PIL import Image
 from dotenv import load_dotenv
 import io
 import os
-import json  # To parse the JSON response
+import json
+import base64
 
 # --- Install pillowHeif if you plan to use HEIC/HEIF images ---
 try:
@@ -29,11 +30,13 @@ def sendImagePromptWithSchema(imageFile, textPrompt, responseSchema):
         responseSchema (dict): The JSON schema the response should follow.
     """
     try:
-        # Set up the API key
         try:
-            client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+            client = OpenAI(
+                api_key=os.environ["LLM_API_KEY"],
+                base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
+            )
         except ValueError:
-            print("Please set the GEMINI_API_KEY environment variable.")
+            print("Please set the LLM_API_KEY environment variable.")
             print("You can get one from https://ai.google.dev/gemini-api/docs/api-key")
             print("Exiting...")
             exit()
@@ -50,25 +53,47 @@ def sendImagePromptWithSchema(imageFile, textPrompt, responseSchema):
         else:
             raise ValueError("imageFile must be a file, file-like object, or bytes.")
 
-        response = client.models.generate_content(
+        buffer = io.BytesIO()
+        img.save(buffer, format="PNG")
+        img_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
+
+        response = client.chat.completions.create(
             model="gemini-2.5-flash-lite",
-            contents=[img, textPrompt],
-            config={
-                "response_mime_type": "application/json",
-                "response_schema": responseSchema,
-            },
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": textPrompt},
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/png;base64,{img_base64}"
+                            }
+                        }
+                    ]
+                }
+            ],
+            response_format={
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "extracted_data",
+                    "schema": responseSchema,
+                    "strict": True,
+                }
+            }
         )
 
-        # Try to parse the JSON response
         try:
             print("Parsing JSON Response")
-            parsedResponse = json.loads(response.text)
+            content = response.choices[0].message.content
+            parsedResponse = json.loads(content)
             return parsedResponse
 
-        except json.JSONDecodeError:
+        except (json.JSONDecodeError, AttributeError, IndexError) as e:
             print("\nError: Model did not return valid JSON despite schema request.")
             print("Please check the model's response and your schema for consistency.")
-            return {"error": "Invalid JSON response", "response": response.text}
+            content = response.choices[0].message.content if response.choices else str(response)
+            return {"error": "Invalid JSON response", "response": content}
 
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -83,12 +108,10 @@ def getReceiptPromptInfo():
         "properties": {
             "totalCost": {
                 "type": "number",
-                "format": "float",
                 "description": "Total cost of the fuel purchase",
             },
             "gallonsPurchased": {
                 "type": "number",
-                "format": "float",
                 "description": "Number of gallons purchased",
             },
             "datetime": {

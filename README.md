@@ -57,7 +57,7 @@ Gas Receipt Automation is a full-stack application designed to streamline the pr
 
     ```env
     LUBELOGGER_URL=<your-lubelogger-url>
-    GOOGLE_API_KEY=<your-google-gemini-api-key>
+    LLM_API_KEY=<your-gemini-api-key>
     AUTH0_DOMAIN=<your-auth0-domain>
     AUTH0_AUDIENCE=<your-auth0-api-audience>
     ```

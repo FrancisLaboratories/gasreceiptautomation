@@ -1,4 +1,3 @@
-from google import genai
 from PIL import Image
 from dotenv import load_dotenv
 from datetime import datetime
