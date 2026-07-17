@@ -13,7 +13,7 @@ import json  # To parse the JSON response
 import requests
 import proc
 import uvicorn
-import pytz
+from zoneinfo import ZoneInfo
 
 from authutils import VerifyToken
 
@@ -202,8 +202,7 @@ async def submit_gas(
     receipt_datetime = receipt_data.get("datetime", "unknown time and date")
 
     # Obtener la hora actual en Eastern Time
-    eastern = pytz.timezone("US/Eastern")
-    now_et = datetime.now(eastern)
+    now_et = datetime.now(ZoneInfo("US/Eastern"))
     formatted_time = now_et.strftime("%Y-%m-%d %H:%M:%S %Z")
 
     notes_value = f"Brand: {store_brand}\nAddress: {store_address}\nReceipt dated {receipt_datetime}\n(Submitted by {submitting_user} at {formatted_time})"
