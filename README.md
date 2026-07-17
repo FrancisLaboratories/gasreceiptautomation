@@ -21,6 +21,7 @@ Gas Receipt Automation is a full-stack application designed to streamline the pr
 
 - **Automated Data Extraction**: Utilizes Google's Gemini multi-modal LLM to intelligently parse receipt photos and extract key details like total cost, gallons purchased, and transaction date.
 - **Flexible Odometer Input**: Supports multiple methods for odometer entry, including manual input, a separate photo of the odometer, or extracting it from the receipt photo itself.
+- **HEIC/HEIF Support**: Automatically handles iOS HEIC/HEIF image formats for receipt and odometer photos.
 - **Vehicle Management**: Fetches and displays a list of vehicles from your LubeLogger instance, allowing you to associate each gas receipt with the correct vehicle.
 - **Secure Authentication**: Integrated with Auth0 to ensure that access to the application is secure and user-specific.
 - **Containerized Deployment**: The entire application is containerized using Docker, making setup and deployment straightforward.
@@ -29,8 +30,8 @@ Gas Receipt Automation is a full-stack application designed to streamline the pr
 
 | Component | Technology |
 | :--- | :--- |
-| **Frontend** | [Next.js](https://nextjs.org/), [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/), [Tailwind CSS](https://tailwindcss.com/), [Auth0](https://auth0.com/) |
-| **Backend** | [FastAPI](https://fastapi.tiangolo.com/), [Python](https://www.python.org/), [Google Gemini API](https://ai.google.dev/), [Auth0](https://auth0.com/) |
+| **Frontend** | [Vite](https://vite.dev/), [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/), [Tailwind CSS](https://tailwindcss.com/), [Auth0](https://auth0.com/), [nginx](https://nginx.org/) |
+| **Backend** | [FastAPI](https://fastapi.tiangolo.com/), [Python](https://www.python.org/), [uv](https://docs.astral.sh/uv/), [Google Gemini API](https://ai.google.dev/), [Auth0](https://auth0.com/), [Pillow](https://python-pillow.org/) |
 | **Deployment** | [Docker](https://www.docker.com/), [Docker Compose](https://docs.docker.com/compose/) |
 
 ## Getting Started
@@ -63,16 +64,22 @@ Gas Receipt Automation is a full-stack application designed to streamline the pr
 
     Create a `.env` file in the `client` directory and add the following environment variables:
     ```env
-    NEXT_PUBLIC_AUTH0_DOMAIN=<your-auth0-domain>
-    NEXT_PUBLIC_AUTH0_CLIENT_ID=<your-auth0-client-id>
-    NEXT_PUBLIC_AUTH0_REDIRECT_URI=<your-auth0-redirect-uri>
-    NEXT_PUBLIC_AUTH0_AUDIENCE=<your-auth0-api-audience>
+    VITE_AUTH0_DOMAIN=<your-auth0-domain>
+    VITE_AUTH0_CLIENT_ID=<your-auth0-client-id>
+    VITE_AUTH0_REDIRECT_URI=<your-auth0-redirect-uri>
+    VITE_AUTH0_AUDIENCE=<your-auth0-api-audience>
     ```
 
 3.  **Build and run the application:**
     ```bash
-    docker-compose up --build
+    docker compose up --build
     ```
+
+    To also spin up a bundled LubeLogger instance:
+    ```bash
+    docker compose -f docker-compose.yaml -f docker-compose.lubelogger.yml up --build
+    ```
+
     The application will be available at `http://localhost:8003`.
 
 ## Usage
@@ -87,7 +94,7 @@ Gas Receipt Automation is a full-stack application designed to streamline the pr
 
 The application is composed of two main services:
 
--   **Client**: A Next.js single-page application that provides the user interface for submitting gas receipts. It communicates with the backend API to submit the data.
+-   **Client**: A [Vite](https://vite.dev/)-built React single-page application served by [nginx](https://nginx.org/). It provides the user interface for submitting gas receipts and communicates with the backend API.
 -   **Server**: A FastAPI backend that handles the business logic. It receives the receipt and odometer data, uses the Google Gemini API to extract the relevant information, and then creates a new gas record in LubeLogger via its API.
 
 Both services are containerized with Docker and orchestrated using Docker Compose.
