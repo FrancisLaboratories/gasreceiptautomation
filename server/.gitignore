@@ -213,3 +213,7 @@ cython_debug/
 .vscode/
 .idea/
 testimages/
+
+.env.*
+.env
+!.env.example
