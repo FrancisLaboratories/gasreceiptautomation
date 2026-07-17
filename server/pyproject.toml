@@ -6,7 +6,6 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi[standard]==0.137.1",
-    "google-genai==1.*",
     "openai>=2.46.0",
     "pillow==12.*",
     "pillow-heif==0.22.*",
