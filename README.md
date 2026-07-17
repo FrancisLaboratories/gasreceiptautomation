@@ -59,6 +59,7 @@ Gas Receipt Automation is a full-stack application designed to streamline the pr
     LUBELOGGER_URL=<your-lubelogger-url>
     LLM_API_KEY=<your-llm-api-key>
     LLM_BASE_URL=<your-llm-base-url>  # optional, defaults to Google Gemini OpenAI-compat endpoint
+    LLM_MODEL=<model-name>            # optional, defaults to gemini-2.5-flash-lite
     AUTH0_DOMAIN=<your-auth0-domain>
     AUTH0_AUDIENCE=<your-auth0-api-audience>
     ```
