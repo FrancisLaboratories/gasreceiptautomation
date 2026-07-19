@@ -1,0 +1,27 @@
+services:
+  app:
+    build: .
+    image: gasreceipt:latest
+    ports:
+      - "8003:8003"
+    env_file: .env
+    depends_on:
+      - lubelogger
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  lubelogger:
+    image: ghcr.io/hargata/lubelogger:latest
+    restart: unless-stopped
+    volumes:
+      - lubelogger_data:/App/data
+      - lubelogger_keys:/root/.aspnet/DataProtection-Keys
+    ports:
+      - "8080:8080"
+
+volumes:
+  lubelogger_data:
+  lubelogger_keys:

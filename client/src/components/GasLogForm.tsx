@@ -142,12 +142,7 @@ function GasLogForm() {
       setVehiclesLoading(true);
       setVehiclesError(null);
       try {
-        let baseUrl = "/api";
-        if (import.meta.env.VITE_SERVER_URL) {
-          console.info("VITE_SERVER_URL is set, using it instead of /api");
-          baseUrl = import.meta.env.VITE_SERVER_URL;
-        }
-        const response = await fetchWithAuth(`${baseUrl}/vehicles`);
+        const response = await fetchWithAuth(`/api/vehicles`);
         if (!response.ok) throw new Error("Failed to fetch vehicles");
         const data = await response.json();
         if (Array.isArray(data.vehicles)) {
@@ -241,12 +236,7 @@ function GasLogForm() {
     const userName = user?.name || "";
     formData.append("userName", userName);
 
-    let baseUrl = "/api";
-    if (import.meta.env.VITE_SERVER_URL) {
-      console.info("VITE_SERVER_URL is set, using it instead of /api");
-      baseUrl = import.meta.env.VITE_SERVER_URL;
-    }
-    const apiEndpoint = `${baseUrl}/submitGas`;
+    const apiEndpoint = `/api/submitGas`;
 
     try {
       const response = await fetchWithAuth(apiEndpoint, {
