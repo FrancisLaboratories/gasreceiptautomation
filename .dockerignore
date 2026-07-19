@@ -1,0 +1,13 @@
+venv
+.idea
+.vscode
+.env.*
+.venv
+**/__pycache__
+**/.DS_Store
+**/node_modules
+client/dist
+server/.env
+**/README.md
+*.docker-compose.yaml
+temp/

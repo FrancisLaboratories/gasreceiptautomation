@@ -1,11 +1,10 @@
 from PIL import Image
 from dotenv import load_dotenv
 from datetime import datetime
-from fastapi import FastAPI, File, Form, UploadFile, HTTPException, Security
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Depends, FastAPI, File, Form, HTTPException, Security, UploadFile
+from fastapi.responses import JSONResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import Depends, FastAPI  # 👈 new imports
-from fastapi.security import HTTPBearer  # 👈 new imports
+from fastapi.security import HTTPBearer
 from typing import Optional
 import io
 import os
@@ -34,6 +33,7 @@ app = FastAPI(
     description="API for submitting gas receipts and odometer readings.",
 )
 auth = VerifyToken()
+router = APIRouter(prefix="/api")
 
 # Allow CORS for local development (adjust origins as needed)
 app.add_middleware(
@@ -66,7 +66,7 @@ def sendDataToAI(imageFile, odometerInputMethod: str, getOdometerOnly: bool = Fa
     )
 
 
-@app.post("/submitGas")
+@router.post("/submitGas")
 async def submit_gas(
     auth_result: str = Security(auth.verify),
     receiptPhoto: UploadFile = File(
@@ -294,7 +294,7 @@ async def submit_gas(
     )
 
 
-@app.get("/vehicles")
+@router.get("/vehicles")
 async def get_vehicles(auth_result: str = Security(auth.verify)):
 
     try:
@@ -329,7 +329,7 @@ async def get_vehicles(auth_result: str = Security(auth.verify)):
     return {"vehicles": vehicles}
 
 
-@app.get("/health")
+@router.get("/health")
 async def health_check():
     lube_logger_url = os.environ.get("LUBELOGGER_URL")
     if not lube_logger_url:
@@ -354,7 +354,7 @@ async def health_check():
         )
 
 
-@app.get("/authTest")
+@router.get("/authTest")
 def authTest(
     auth_result: str = Security(auth.verify),
 ):  # 👈 Use Security and the verify method to protect your endpoints
@@ -362,5 +362,24 @@ def authTest(
     return auth_result
 
 
+app.include_router(router)
+
+
+@app.get("/config.js")
+def get_config():
+    config = {
+        "PUBLIC_AUTH0_DOMAIN": os.getenv("PUBLIC_AUTH0_DOMAIN", ""),
+        "PUBLIC_AUTH0_CLIENT_ID": os.getenv("PUBLIC_AUTH0_CLIENT_ID", ""),
+        "PUBLIC_AUTH0_AUDIENCE": os.getenv("PUBLIC_AUTH0_AUDIENCE", ""),
+        "PUBLIC_AUTH0_REDIRECT_URI": os.getenv("PUBLIC_AUTH0_REDIRECT_URI", ""),
+    }
+    js = f"window.__RUNTIME_CONFIG__ = {json.dumps(config)};"
+    return Response(content=js, media_type="application/javascript")
+
+
+if os.path.isdir("static"):
+    app.frontend("/", directory="static", fallback="index.html")
+
+
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", 8003)))

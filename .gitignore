@@ -1,3 +1,6 @@
 .vscode/
 .idea/
 temp/
+.env.*
+.env
+!.env.example

@@ -12,12 +12,13 @@ function AppContent() {
 }
 
 function App() {
-  const domain = import.meta.env.VITE_AUTH0_DOMAIN;
-  const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
+  const rc = (window as any).__RUNTIME_CONFIG__ || {};
+  const domain = rc.PUBLIC_AUTH0_DOMAIN || import.meta.env.VITE_AUTH0_DOMAIN;
+  const clientId = rc.PUBLIC_AUTH0_CLIENT_ID || import.meta.env.VITE_AUTH0_CLIENT_ID;
 
   if (!domain || !clientId) {
     throw new Error(
-      "Missing required environment variables: VITE_AUTH0_DOMAIN and VITE_AUTH0_CLIENT_ID",
+      "Missing required environment variables: PUBLIC_AUTH0_DOMAIN and PUBLIC_AUTH0_CLIENT_ID",
     );
   }
 
@@ -27,8 +28,8 @@ function App() {
       clientId={clientId}
       authorizationParams={{
         redirect_uri:
-          import.meta.env.VITE_AUTH0_REDIRECT_URI || window.location.origin,
-        audience: import.meta.env.VITE_AUTH0_AUDIENCE || "",
+          rc.PUBLIC_AUTH0_REDIRECT_URI || import.meta.env.VITE_AUTH0_REDIRECT_URI || window.location.origin,
+        audience: rc.PUBLIC_AUTH0_AUDIENCE || import.meta.env.VITE_AUTH0_AUDIENCE || "",
       }}
       useRefreshTokens={true}
       useRefreshTokensFallback={false}
