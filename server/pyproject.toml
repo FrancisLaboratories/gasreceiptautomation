@@ -7,7 +7,7 @@ requires-python = ">=3.13"
 dependencies = [
     "fastapi[standard]==0.139.2",
     "openai>=2.46.0",
-    "requests>=2.32.0",
+    "requests>=2.34.2",
     "pillow==12.*",
     "pillow-heif>=1.0.0,<2",
     "pydantic-settings==2.*",
