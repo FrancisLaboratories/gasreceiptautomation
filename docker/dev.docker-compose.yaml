@@ -2,7 +2,7 @@ services:
   client:
     image: gasreceiptclient:latest
     build:
-      context: ./client
+      context: ../client
       dockerfile: Dockerfile
     ports:
       - "8003:8003"
@@ -18,26 +18,11 @@ services:
     networks:
       - appNetwork
     build:
-      context: ./server
+      context: ../server
       dockerfile: Dockerfile
-    env_file: ./server/.env
-
-  lubelogger:
-    image: ghcr.io/hargata/lubelogger:latest
-    restart: unless-stopped
-    volumes:
-      - lubelogger_data:/App/data
-      - lubelogger_keys:/root/.aspnet/DataProtection-Keys
-    ports:
-      - "8080:8080"
-    networks:
-      - appNetwork
+    env_file: ../server/.env
 
 networks:
   appNetwork:
     driver: bridge
-
-volumes:
-  lubelogger_data:
-  lubelogger_keys:
     
