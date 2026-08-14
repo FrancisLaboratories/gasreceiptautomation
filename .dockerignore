@@ -12,5 +12,6 @@ server/.env
 *.docker-compose.yaml
 temp/
 
+.env
 server/.env
 client/.env.production
