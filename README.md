@@ -23,15 +23,15 @@ Gas Receipt Automation is a full-stack application designed to streamline the pr
 - **Flexible Odometer Input**: Supports multiple methods for odometer entry, including manual input, a separate photo of the odometer, or extracting it from the receipt photo itself.
 - **HEIC/HEIF Support**: Automatically handles iOS HEIC/HEIF image formats for receipt and odometer photos.
 - **Vehicle Management**: Fetches and displays a list of vehicles from your LubeLogger instance, allowing you to associate each gas receipt with the correct vehicle.
-- **Secure Authentication**: Integrated with Auth0 to ensure that access to the application is secure and user-specific.
+- **Secure Authentication**: Integrated with OpenID Connect (OIDC) to ensure that access to the application is secure and user-specific.
 - **Containerized Deployment**: The entire application is containerized using Docker, making setup and deployment straightforward.
 
 ## Tech Stack
 
 | Component | Technology |
 | :--- | :--- |
-| **Frontend** | [Vite](https://vite.dev/), [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/), [Tailwind CSS](https://tailwindcss.com/), [Auth0](https://auth0.com/), [nginx](https://nginx.org/) |
-| **Backend** | [FastAPI](https://fastapi.tiangolo.com/), [Python](https://www.python.org/), [uv](https://docs.astral.sh/uv/), [OpenAI SDK](https://pypi.org/project/openai/) (LLM-agnostic), [Auth0](https://auth0.com/), [Pillow](https://python-pillow.org/) |
+| **Frontend** | [Vite](https://vite.dev/), [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/), [Tailwind CSS](https://tailwindcss.com/), [oidc-client-ts](https://github.com/authts/oidc-client-ts), [nginx](https://nginx.org/) |
+| **Backend** | [FastAPI](https://fastapi.tiangolo.com/), [Python](https://www.python.org/), [uv](https://docs.astral.sh/uv/), [OpenAI SDK](https://pypi.org/project/openai/) (LLM-agnostic), [PyJWT](https://pyjwt.readthedocs.io/) (OIDC), [Pillow](https://python-pillow.org/) |
 | **Deployment** | [Docker](https://www.docker.com/), [Docker Compose](https://docs.docker.com/compose/) |
 
 ## Getting Started
@@ -41,7 +41,7 @@ Gas Receipt Automation is a full-stack application designed to streamline the pr
 - [Docker](https://www.docker.com/get-started)
 - [Docker Compose](https://docs.docker.com/compose/install/)
 - A running instance of [LubeLogger](https://lubelogger.com/)
-- An Auth0 account for authentication
+- An OIDC identity provider (e.g. Auth0) for authentication
 - An LLM API key (e.g. Google Gemini, OpenAI, etc.)
 
 ### Installation
@@ -60,16 +60,16 @@ Gas Receipt Automation is a full-stack application designed to streamline the pr
     LLM_API_KEY=<your-llm-api-key>
     LLM_BASE_URL=<your-llm-base-url>  # optional, defaults to Google Gemini OpenAI-compat endpoint
     LLM_MODEL=<model-name>            # optional, defaults to gemini-2.5-flash-lite
-    AUTH0_DOMAIN=<your-auth0-domain>
-    AUTH0_AUDIENCE=<your-auth0-api-audience>
+    OIDC_ISSUER=<your-oidc-issuer>
+    OIDC_AUDIENCE=<your-oidc-api-audience>
     ```
 
     Create a `.env` file in the `client` directory and add the following environment variables:
     ```env
-    VITE_AUTH0_DOMAIN=<your-auth0-domain>
-    VITE_AUTH0_CLIENT_ID=<your-auth0-client-id>
-    VITE_AUTH0_REDIRECT_URI=<your-auth0-redirect-uri>
-    VITE_AUTH0_AUDIENCE=<your-auth0-api-audience>
+    VITE_OIDC_ISSUER=<your-oidc-issuer>
+    VITE_OIDC_CLIENT_ID=<your-oidc-client-id>
+    VITE_OIDC_REDIRECT_URI=<your-oidc-redirect-uri>
+    VITE_OIDC_AUDIENCE=<your-oidc-api-audience>
     ```
 
 3.  **Build and run the application:**
@@ -86,7 +86,7 @@ Gas Receipt Automation is a full-stack application designed to streamline the pr
 
 ## Usage
 
-1.  **Log in**: Access the application and log in using your Auth0 credentials.
+1.  **Log in**: Access the application and log in using your OIDC provider (e.g. Auth0) credentials.
 2.  **Select a vehicle**: Choose the vehicle you are logging a gas receipt for from the dropdown menu.
 3.  **Upload receipt**: Upload a clear photo of your gas receipt.
 4.  **Provide odometer reading**: Enter the odometer reading manually or upload a photo of the odometer.

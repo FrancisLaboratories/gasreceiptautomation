@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth } from "react-oidc-context";
 import LoadingScreen from "./LoadingScreen";
 
 function GasLogForm() {
@@ -21,11 +21,22 @@ function GasLogForm() {
 
   const [theme, setTheme] = useState<string>("light");
 
-  // Auth0
-  const { user, logout, isAuthenticated, getAccessTokenSilently } = useAuth0();
+  // OIDC
+  const { user, isAuthenticated, signinSilent, signoutRedirect } = useAuth();
+
+  const getValidAccessToken = async (): Promise<string> => {
+    if (user && user.access_token && !user.expired) {
+      return user.access_token;
+    }
+    const freshUser = await signinSilent();
+    if (freshUser?.access_token) {
+      return freshUser.access_token;
+    }
+    throw new Error("Not authenticated");
+  };
 
   const fetchWithAuth = async (input: RequestInfo, init: RequestInit = {}) => {
-    const token = await getAccessTokenSilently();
+    const token = await getValidAccessToken();
     const headers = new Headers(init.headers || {});
     headers.set("Authorization", `Bearer ${token}`);
     return fetch(input, { ...init, headers });
@@ -233,7 +244,7 @@ function GasLogForm() {
     formData.append("odometerInputMethod", odometerInputMethod);
     formData.append("filledToFull", filledToFull);
     formData.append("filledLastTime", filledLastTime);
-    const userName = user?.name || "";
+    const userName = user?.profile?.name || "";
     formData.append("userName", userName);
 
     const apiEndpoint = `/api/submitGas`;
@@ -284,17 +295,19 @@ function GasLogForm() {
         onSubmit={handleSubmit}
         className="bg-white dark:bg-gray-700 p-10 rounded-xl shadow-2xl w-full max-w-lg border border-gray-200 dark:border-gray-600 transition-colors duration-300"
       >
-        {/* Auth0 User Info and Logout */}
+        {/* User Info and Logout */}
         {isAuthenticated && user && (
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center space-x-2 justify-end w-full">
               <span className="px-3 py-1 rounded-lg border-1 font-semibold text-sm transition-colors duration-300">
-                {user.name}
+                {user.profile?.name}
               </span>
               <button
                 type="button"
                 onClick={() =>
-                  logout({ logoutParams: { returnTo: window.location.origin } })
+                  signoutRedirect({
+                    extraQueryParams: { returnTo: window.location.origin },
+                  })
                 }
                 className="px-3 py-1 rounded-lg bg-red-500 hover:bg-red-600 text-white font-semibold text-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-400"
               >
