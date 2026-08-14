@@ -25,6 +25,22 @@ if not lube_logger_url:
         "[ACTION REQUIRED] LubeLogger server URL environment variable (LUBELOGGER_URL) is not set"
     )
 
+# Check that all required OIDC environment variables are set. Quit if any are
+# missing, otherwise token verification (and /config.js) would fail later with
+# a confusing error instead of a clear message.
+required_oidc_vars = {
+    "OIDC_ISSUER": None,
+    "OIDC_AUDIENCE": None,
+    "PUBLIC_OIDC_ISSUER": None,
+    "PUBLIC_OIDC_CLIENT_ID": None,
+}
+missing_oidc_vars = [name for name in required_oidc_vars if not os.environ.get(name)]
+if missing_oidc_vars:
+    raise ValueError(
+        "[ACTION REQUIRED] Missing OIDC environment variables: "
+        + ", ".join(missing_oidc_vars)
+    )
+
 token_auth_scheme = HTTPBearer()
 
 app = FastAPI(
