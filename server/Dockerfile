@@ -11,7 +11,7 @@ COPY . .
 
 # RUN pip install --no-cache-dir -r requirements.txt
 
-RUN uv sync --locked --no-cache --no-dev
+RUN uv sync --locked --no-cache --no-dev --system
 
 # COPY . .
 
