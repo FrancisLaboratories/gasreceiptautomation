@@ -5,10 +5,9 @@ import os
 
 
 class Settings(BaseSettings):
-    auth0_domain: str = os.getenv("AUTH0_DOMAIN", None)
-    auth0_api_audience: str = os.getenv("AUTH0_API_AUDIENCE", None)
-    auth0_issuer: str = os.getenv("AUTH0_ISSUER", None)
-    auth0_algorithms: str = os.getenv("AUTH0_ALGORITHMS", "RS256")
+    oidc_issuer: str = os.getenv("OIDC_ISSUER", None)
+    oidc_audience: str = os.getenv("OIDC_AUDIENCE", None)
+    oidc_algorithms: str = os.getenv("OIDC_ALGORITHMS", "RS256")
 
 
 @lru_cache()

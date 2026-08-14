@@ -28,7 +28,7 @@ class VerifyToken:
 
         # This gets the JWKS from a given URL and does processing so you can
         # use any of the keys available
-        jwks_url = f"https://{self.config.auth0_domain}/.well-known/jwks.json"
+        jwks_url = f"{self.config.oidc_issuer.rstrip('/')}/.well-known/jwks.json"
         self.jwks_client = jwt.PyJWKClient(jwks_url)
 
     async def verify(
@@ -53,12 +53,11 @@ class VerifyToken:
             payload = jwt.decode(
                 token.credentials,
                 signing_key,
-                algorithms=self.config.auth0_algorithms,
-                audience=self.config.auth0_api_audience,
-                issuer=self.config.auth0_issuer,
+                algorithms=[self.config.oidc_algorithms],
+                audience=self.config.oidc_audience,
+                issuer=self.config.oidc_issuer,
             )
         except Exception as error:
             raise UnauthorizedException(str(error))
 
         return payload
-        # 👆 new code

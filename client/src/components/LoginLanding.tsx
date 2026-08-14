@@ -1,7 +1,7 @@
-import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth } from "react-oidc-context";
 
 function LoginLanding() {
-  const { loginWithRedirect } = useAuth0();
+  const { signinRedirect } = useAuth();
 
   return (
     <div className="container mx-auto p-6 bg-gradient-to-r from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-900 min-h-screen flex items-center justify-center transition-colors duration-300">
@@ -15,7 +15,7 @@ function LoginLanding() {
         <div className="flex flex-col gap-4">
           <button
             className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-300 ease-in-out transform hover:scale-105 shadow-lg"
-            onClick={() => loginWithRedirect()}
+            onClick={() => signinRedirect()}
           >
             Log In
           </button>

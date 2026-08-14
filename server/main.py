@@ -368,10 +368,10 @@ app.include_router(router)
 @app.get("/config.js")
 def get_config():
     config = {
-        "PUBLIC_AUTH0_DOMAIN": os.getenv("PUBLIC_AUTH0_DOMAIN", ""),
-        "PUBLIC_AUTH0_CLIENT_ID": os.getenv("PUBLIC_AUTH0_CLIENT_ID", ""),
-        "PUBLIC_AUTH0_AUDIENCE": os.getenv("PUBLIC_AUTH0_AUDIENCE", ""),
-        "PUBLIC_AUTH0_REDIRECT_URI": os.getenv("PUBLIC_AUTH0_REDIRECT_URI", ""),
+        "PUBLIC_OIDC_ISSUER": os.getenv("PUBLIC_OIDC_ISSUER", ""),
+        "PUBLIC_OIDC_CLIENT_ID": os.getenv("PUBLIC_OIDC_CLIENT_ID", ""),
+        "PUBLIC_OIDC_AUDIENCE": os.getenv("PUBLIC_OIDC_AUDIENCE", ""),
+        "PUBLIC_OIDC_REDIRECT_URI": os.getenv("PUBLIC_OIDC_REDIRECT_URI", ""),
     }
     js = f"window.__RUNTIME_CONFIG__ = {json.dumps(config)};"
     return Response(content=js, media_type="application/javascript")
