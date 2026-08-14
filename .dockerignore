@@ -11,3 +11,6 @@ server/.env
 **/README.md
 *.docker-compose.yaml
 temp/
+
+server/.env
+client/.env.production
