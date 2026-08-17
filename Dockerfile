@@ -15,7 +15,7 @@ WORKDIR /app
 # ENV PATH="/app/.venv/bin:$PATH"
 
 COPY server/pyproject.toml server/uv.lock ./
-RUN uv sync--no-dev --compile-bytecode
+RUN uv sync --no-dev --compile-bytecode
 
 RUN apk add --no-cache curl
 
