@@ -15,3 +15,4 @@ temp/
 .env
 server/.env
 client/.env.production
+server/.venv
