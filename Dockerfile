@@ -14,6 +14,7 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 WORKDIR /app
 
 COPY server/pyproject.toml server/uv.lock ./
+
 RUN uv sync --locked --no-dev --compile-bytecode
 
 RUN apk add --no-cache curl
@@ -28,4 +29,4 @@ EXPOSE 8003
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
   CMD curl --fail http://localhost:8003/api/health || exit 1
 
-CMD ["fastapi", "run", "main.py", "--port", "8003"]
+ENTRYPOINT ["fastapi", "run", "main.py", "--port", "8003"]
